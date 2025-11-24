@@ -1,0 +1,108 @@
+-- CREATE DATABASE
+CREATE DATABASE Student_mgmt ;
+-- USE DATABASE 
+USE Student_mgmt;
+-- TEACHERS TABLE 
+CREATE TABLE teachers (
+teacher_id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    phone VARCHAR(15),
+    hire_date DATE
+);
+-- STUDENT TABLE 
+CREATE TABLE Students (
+student_id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    gender ENUM('Male','Female','Other'),
+    date_of_birth DATE,
+    email VARCHAR(100) UNIQUE,
+    phone VARCHAR(15),
+    admission_date DATE
+    );
+    -- COURSE TABLE 
+    CREATE TABLE courses (
+    course_id INT AUTO_INCREMENT PRIMARY KEY,
+    course_name VARCHAR(100) NOT NULL,
+    course_code VARCHAR(20) NOT NULL UNIQUE,
+    credits INT DEFAULT 3,
+    teacher_id INT,
+    FOREIGN KEY (teacher_id) REFERENCES teachers(teacher_id)
+    );
+    -- ENROLLMENT TABLE
+    CREATE TABLE enrollments (
+    enrollment_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT NOT NULL,
+    course_id INT NOT NULL,
+    enrollment_date DATE ,
+    grade VARCHAR(2),
+    FOREIGN KEY (student_id) REFERENCES Students(student_id) ,
+    FOREIGN KEY (course_id) REFERENCES  courses(course_id)
+    );
+    -- ATTENDANCE TABLE 
+    CREATE TABLE attendance (
+    attendance_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT NOT NULL,
+    course_id INT NOT NULL,
+    attendance_date DATE NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    FOREIGN KEY (student_id) REFERENCES Students(student_id) ,
+    FOREIGN KEY (course_id) REFERENCES courses(course_id)
+    );
+    -- 	INSERTION INTO TABLES 
+    INSERT INTO teachers (full_name, email, phone, hire_date) VALUES
+('Rahul Sharma', 'rahul.sharma@college.com', '9876543210', '2022-06-01'),
+('Priya Verma', 'priya.verma@college.com', '9876543211', '2023-01-15');
+
+INSERT INTO Students (full_name, gender, date_of_birth, email, phone, admission_date) VALUES
+('Amit Kumar', 'Male', '2005-03-10', 'amit@example.com', '9000000001', '2024-07-01'),
+('Sneha Gupta', 'Female', '2004-11-25', 'sneha@example.com', '9000000002', '2024-07-01'),
+('Rohan Singh', 'Male', '2005-01-18', 'rohan@example.com', '9000000003', '2024-07-05');
+
+INSERT INTO courses (course_name, course_code, credits, teacher_id) VALUES
+('Data Structures', 'CS101', 4, 1),
+('Database Systems', 'CS102', 4, 2),
+('Statistics Basics', 'DS101', 3, 2);
+
+
+INSERT INTO enrollments (student_id, course_id, enrollment_date, grade) VALUES
+(1, 1,'2024-07-02', 'A'),
+(1, 2,'2024-07-03', 'B'),
+(2, 1,'2024-07-04', 'A'),
+(3, 3,'2024-07-05', 'B');
+
+INSERT INTO attendance (student_id, course_id, attendance_date, status) VALUES
+(1, 1, '2024-07-10', 'Present'),
+(1, 1, '2024-07-11', 'Absent'),
+(2, 1, '2024-07-10', 'Present'),
+(3, 3, '2024-07-10', 'Late');
+
+-- STUDENTS ENROLLED IN A  DATA STRUCTURE COURSE
+SELECT s.student_id , s.full_name , c.course_name FROM enrollments e
+ JOIN Students s ON e.student_id = s.student_id
+ JOIN courses c ON e.course_id = c.course_id
+ WHERE c.course_code = 'CS101'
+;
+-- Students enrolled courses deatils
+SELECT s.student_id, s.full_name, c.course_name FROM enrollments e
+ JOIN Students s ON e.student_id = s.student_id
+ JOIN courses c ON e.course_id = c.course_id
+ ;
+ 
+ -- In every course how many student is enrolled 
+ SELECT c.course_name , COUNT(e.student_id) FROM courses c LEFT JOIN
+ enrollments e ON c.course_id = e.course_id
+ GROUP BY c.course_id , c.course_name 
+ ;
+ 
+ -- Course Attendance 
+ SELECT c.course_name , a.status FROM attendance a
+ JOIN courses c ON a.course_id = c.course_id 
+ ;
+ 
+ -- Course teach by Teachers
+ SELECT c.teacher_id , t.full_name, c.course_name FROM courses c
+ JOIN teachers t ON c.teacher_id = t.teacher_id
+ ;
+ 
+ -- 
